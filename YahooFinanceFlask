@@ -1,0 +1,27 @@
+from flask import Flask, request, jsonify
+import yfinance as yf
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Flask API is running!"
+
+@app.route('/Company', methods=['GET'])
+def get_company_info():
+    symbol = request.args.get('symbol')
+
+    if not symbol:
+        return {"error": "Please provide a company symbol"}, 400
+
+    stock = yf.Ticker(symbol)
+    info = stock.info
+
+    return jsonify({
+        "company_name": info.get("longName"),
+        "industry": info.get("industry"),
+        "sector": info.get("sector")
+    })
+
+if __name__ == '__main__':
+    app.run(debug=True)
